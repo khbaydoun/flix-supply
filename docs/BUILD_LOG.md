@@ -210,3 +210,35 @@ capacity.line-capacity (key lineCode)
 ---
 
 <!-- New steps go below this line -->
+
+## Step 10 — Version control with Git and GitHub (whole project)
+
+**Files:** none changed; created `.git/` and the private repo https://github.com/khbaydoun/flix-supply
+
+- `git init -b main` turned the folder into a Git repository; the first commit holds all 63 files.
+- `gh repo create flix-supply --private --source=. --remote=origin --push` created the GitHub repo, linked it as `origin` and uploaded `main`.
+- Only local dev passwords (`supply`) are committed; `.gitignore` keeps out `build/`, `.gradle` and `.DS_Store`.
+
+**Concepts:** local repository vs remote, `origin`, commit, push.
+
+**Try it:** `git log --oneline`, then open the GitHub URL above.
+
+---
+
+## Step 11 — Integration-test agent (whole project, tooling)
+
+**File:** `.claude/agents/integration-test-writer.md`
+
+A Claude Code **custom subagent**: a helper with its own instructions that only writes integration tests.
+
+- It reads the existing tests first and copies their style: Testcontainers + `@ServiceConnection` for supply-service, `TopologyTestDriver` for capacity-service.
+- It proposes a test plan (given / when / then, with the concept named) and waits for approval before writing.
+- Every plan must cover the happy path, no partial updates, duplicate messages, and failure cases (400/404/409).
+- It runs the test with Gradle and reports the real result; "skipped" (no Docker) is not "passed".
+- It never changes production or build files without approval; it reports bugs as findings instead.
+
+**Concept:** Claude Code subagents (`.claude/agents/*.md` — frontmatter with `name`, `description`, `tools`, then the instructions).
+
+**Try it:** run `/agents` to see it listed, then ask "use integration-test-writer to plan a test for cancelling a ride".
+
+---
